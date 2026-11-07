@@ -31,6 +31,7 @@ Kalau `python` tidak dikenali, coba `py nama_file.py`. File juga bisa dibuka di 
 | 10 | [alat_kalkulus.py](#10-alat_kalkuluspy) | Pengecek jawaban Kalkulus 1 | `eval`, `None`, komposisi fungsi |
 | 11 | [analisis_csv.py](#11-analisis_csvpy) | Penganalisis file CSV otomatis | `csv`, mengelompokkan data |
 | 12 | [bersihkan_csv.py](#12-bersihkan_csvpy) | Pembersih data CSV yang berantakan | `set`, `split`/`join`, `DictWriter` |
+| 13 | [Laporan excel.py](#13-laporan-excelpy) | Pembuat laporan Excel otomatis dari CSV | `openpyxl`, rumus Excel, grafik |
 
 ---
 
@@ -355,7 +356,7 @@ Makanan                                       11    19.6%
 
 Yang dilakukan:
 - Merapikan spasi berlebih
-- Mengubah angka berformat Indonesia (`Rp 1.250.000`, `2.500,50`) menjadi angka standar
+- Mengubah angka berformat Indonesia (`Rp 1.250.000`, `Rp 2.500.000`) menjadi angka standar
 - Menyeragamkan huruf (Title Case) pada kolom yang dipilih
 - Membuang baris kosong
 - Membuang baris duplikat
@@ -375,7 +376,7 @@ nama,kota,tanggal,jumlah,harga
 siti aminah,bandung,2026-10-01,1,"Rp 1.250.000"
 budi santoso,jakarta,2026-10-01,2,15000
 ,,,,
-Andi   Wijaya,surabaya,2026-10-02,3,"2.500,50"
+Andi   Wijaya,surabaya,2026-10-02,3,"Rp 2.500.000"
 Siti  Aminah,Bandung,2026-10-01,1,"Rp 1.250.000"
 dewi lestari,MEDAN,2026-10-03,,"Rp 75.000"
 ```
@@ -401,7 +402,7 @@ Data bersihnya:
 nama | kota | tanggal | jumlah | harga
 Budi Santoso | Jakarta | 2026-10-01 | 2 | 15000
 Siti Aminah | Bandung | 2026-10-01 | 1 | 1250000
-Andi Wijaya | Surabaya | 2026-10-02 | 3 | 2500.50
+Andi Wijaya | Surabaya | 2026-10-02 | 3 | 2500000
 Dewi Lestari | Medan | 2026-10-03 |  | 75000
 ```
 
@@ -411,6 +412,76 @@ Dewi Lestari | Medan | 2026-10-03 |  | 75000
 - Koma dianggap pemisah desimal, dan titik dengan tepat tiga digit setelahnya dianggap pemisah ribuan (`1.500` dibaca seribu lima ratus).
 - `.title()` tidak mengenal singkatan (`PT` menjadi `Pt`), jadi pilih kolom huruf dengan hati-hati.
 - Duplikat berarti baris yang sama persis di semua kolom.
+
+---
+
+## 13. Laporan excel.py
+
+**Fungsi:** mengubah file CSV menjadi **laporan Excel (`.xlsx`)** yang rapi, lengkap dengan ringkasan dan grafik. **File CSV asli tidak diubah.** Kamu tidak perlu membuat Excel dulu: inputnya CSV, file Excel dibuat oleh programnya.
+
+Isi file Excel yang dihasilkan:
+- **Sheet Ringkasan:** jumlah baris dan kolom, statistik tiap kolom angka (total, rata-rata, minimum, maksimum), total per kelompok beserta persennya, dan grafik batang
+- **Sheet Data:** data asli dengan header berwarna, lebar kolom otomatis, baris header terkunci, dan filter
+
+Semua angka di sheet Ringkasan berupa **rumus Excel** (`SUM`, `AVERAGE`, `SUMIF`), jadi kalau data di sheet Data diedit, ringkasan dan grafik ikut berubah.
+
+**Persiapan:** pasang library `openpyxl` satu kali saja:
+
+```
+pip install openpyxl
+```
+
+**Cara pakai:**
+1. Siapkan file CSV, misalnya `penjualan.csv` dari [proyek 11](#11-analisis_csvpy) atau hasil [bersihkan_csv.py](#12-bersihkan_csvpy).
+2. Jalankan programnya, lalu masukkan lokasi lengkap file CSV.
+3. Pilih nomor kolom teks untuk dikelompokkan (misalnya `kategori`).
+4. Pilih nomor kolom angka yang dijumlahkan (misalnya `jumlah`).
+5. Laporan tersimpan di folder yang sama dengan CSV, dengan nama `namafile_laporan.xlsx`.
+
+**Contoh (pakai `penjualan.csv`, kelompok `kategori`, jumlahkan `jumlah`):**
+
+```
+=== PEMBUAT LAPORAN EXCEL ===
+Lokasi file CSV: C:\Users\HP\penjualan.csv
+
+Kolom teks (untuk dikelompokkan):
+  1. tanggal
+  2. produk
+  3. kategori
+Pilih nomor kolom kelompok: 3
+
+Kolom angka (untuk dijumlahkan):
+  1. jumlah
+  2. harga
+Pilih nomor kolom yang dijumlahkan: 1
+
+Laporan tersimpan: C:\Users\HP\penjualan_laporan.xlsx
+Isi: sheet Ringkasan (6 baris data) dan sheet Data.
+```
+
+Isi sheet Ringkasan:
+
+```
+Jumlah baris data   6
+Jumlah kolom        5
+
+Kolom     Total     Rata-rata    Minimum   Maksimum
+jumlah    56        9.33         5         15
+harga     89,000    14,833.33    8,000     22,000
+
+Total jumlah per kategori
+kategori   Total   Persen
+Minuman    45      80.4%
+Makanan    11      19.6%
+Total      56
+```
+
+**Tips:** urutan alurnya: [bersihkan_csv.py](#12-bersihkan_csvpy) (membersihkan), lalu `Laporan excel.py` (membuat laporan Excel). Kolom angka berformat `Rp 15.000` tidak terbaca sebagai angka, jadi bersihkan dulu.
+
+**Batasan:**
+- Kolom angka hanya dikenali kalau semua isinya angka standar (tanpa `Rp` dan titik ribuan).
+- Total per kelompok hanya untuk satu kolom angka dalam satu kali jalan.
+- Kalau file `.xlsx` sedang terbuka di Excel, tutup dulu sebelum menjalankan ulang.
 
 ---
 
