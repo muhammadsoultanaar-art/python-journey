@@ -32,6 +32,8 @@ Kalau `python` tidak dikenali, coba `py nama_file.py`. File juga bisa dibuka di 
 | 11 | [analisis_csv.py](#11-analisis_csvpy) | Penganalisis file CSV otomatis | `csv`, mengelompokkan data |
 | 12 | [bersihkan_csv.py](#12-bersihkan_csvpy) | Pembersih data CSV yang berantakan | `set`, `split`/`join`, `DictWriter` |
 | 13 | [Laporan excel.py](#13-laporan-excelpy) | Pembuat laporan Excel otomatis dari CSV | `openpyxl`, rumus Excel, grafik |
+| 14 | [grafik_csv.py](#14-grafik_csvpy) | Pembuat grafik batang dan garis dari CSV | `matplotlib`, `plt.bar`, `plt.plot`, simpan gambar |
+| 15 | [pengambil_kurs.py](#15-pengambil_kurspy) | Pengambil kurs mata uang dari internet | `requests`, API, JSON, `try`/`except` |
 
 ---
 
@@ -482,6 +484,132 @@ Total      56
 - Kolom angka hanya dikenali kalau semua isinya angka standar (tanpa `Rp` dan titik ribuan).
 - Total per kelompok hanya untuk satu kolom angka dalam satu kali jalan.
 - Kalau file `.xlsx` sedang terbuka di Excel, tutup dulu sebelum menjalankan ulang.
+
+---
+
+## 14. grafik_csv.py
+
+**Fungsi:** membuat **grafik** dari file CSV, lalu menyimpannya sebagai gambar `.png`. **File CSV asli tidak diubah.**
+
+| Menu | Fungsi |
+|---|---|
+| `1` | Grafik batang: total satu kolom angka per kelompok (misalnya jumlah per kategori) |
+| `2` | Grafik garis: tren satu kolom angka per nilai di sumbu X (misalnya jumlah per tanggal) |
+| `0` | Keluar |
+
+Angka di grafik diberi label dan memakai pemisah ribuan. Gambar tersimpan di folder yang sama dengan CSV, dengan nama seperti `penjualan_batang_jumlah.png`.
+
+**Persiapan:** pasang library `matplotlib` satu kali saja:
+
+```
+pip install matplotlib
+```
+
+**Cara pakai:**
+1. Siapkan file CSV, misalnya `penjualan.csv` dari [proyek 11](#11-analisis_csvpy) atau hasil [bersihkan_csv.py](#12-bersihkan_csvpy).
+2. Jalankan programnya, lalu masukkan lokasi lengkap file CSV.
+3. Pilih menu `1` atau `2`.
+4. Pilih nomor kolom teks (kelompok atau sumbu X), lalu nomor kolom angka yang dijumlahkan.
+5. Grafik tersimpan sebagai `.png` dan jendela grafik terbuka. Tutup jendelanya untuk kembali ke menu.
+
+**Contoh (pakai `penjualan.csv`):**
+
+```
+=== PEMBUAT GRAFIK DARI CSV ===
+Lokasi file CSV: C:\Users\HP\penjualan.csv
+
+Menu:
+  1. Grafik batang (total per kelompok)
+  2. Grafik garis (tren per kolom, misalnya tanggal)
+  0. Keluar
+Pilih menu: 1
+
+Kolom teks (untuk dikelompokkan):
+  1. tanggal
+  2. produk
+  3. kategori
+Pilih nomor kolom kelompok: 3
+
+Kolom angka (untuk dijumlahkan):
+  1. jumlah
+  2. harga
+Pilih nomor kolom yang dijumlahkan: 1
+
+Grafik tersimpan: C:\Users\HP\penjualan_batang_jumlah.png
+```
+
+Isi grafik batang: Minuman 45, Makanan 11. Kalau memilih menu `2` dengan sumbu X `tanggal` dan kolom `jumlah`, grafik garisnya menampilkan 15 (2026-10-01), 20 (2026-10-02), dan 21 (2026-10-03).
+
+**Tips:** alurnya: [bersihkan_csv.py](#12-bersihkan_csvpy) (membersihkan), [analisis_csv.py](#11-analisis_csvpy) (menganalisis), lalu `grafik_csv.py` (membuat grafik). Grafik garis mengurutkan sumbu X sebagai teks, jadi tanggal harus berformat `2026-10-01` supaya urutannya benar.
+
+**Batasan:**
+- Kolom angka hanya dikenali kalau semua isinya angka standar (tanpa `Rp` dan titik ribuan).
+- Satu grafik hanya untuk satu kolom angka dan satu kolom kelompok.
+- Kalau file `.png` sedang terbuka di program lain, tutup dulu sebelum menjalankan ulang.
+
+---
+
+## 15. pengambil_kurs.py
+
+**Fungsi:** mengambil **kurs mata uang terbaru dari internet** lewat API gratis [Frankfurter](https://frankfurter.dev) (data Bank Sentral Eropa, tanpa API key), lalu menampilkannya dalam rupiah. Program ini butuh koneksi internet.
+
+| Menu | Fungsi |
+|---|---|
+| `1` | Kurs hari ini beberapa mata uang ke rupiah |
+| `2` | Konversi jumlah uang dari satu mata uang ke mata uang lain |
+| `3` | Riwayat kurs 30 hari terakhir, disimpan ke file CSV |
+| `0` | Keluar |
+
+**Persiapan:** pasang library `requests` satu kali saja:
+
+```
+pip install requests
+```
+
+**Cara pakai:**
+1. Pastikan komputer terhubung ke internet.
+2. Jalankan programnya, lalu pilih menu.
+3. Menu `1`: ketik kode mata uang dipisah koma (misalnya `USD,EUR,JPY`).
+4. Menu `2`: isi jumlah, mata uang asal, dan mata uang tujuan (Enter untuk rupiah).
+5. Menu `3`: isi satu kode mata uang. Riwayatnya tersimpan sebagai `kurs_USD.csv` di folder tempat program dijalankan.
+
+**Contoh (angka hanya ilustrasi, kurs asli berubah tiap hari):**
+
+```
+Pilih menu: 1
+Mata uang (pisah koma, contoh USD,EUR,JPY): USD,EUR
+========================================
+1 USD  = Rp    16,400.50  (2026-11-06)
+1 EUR  = Rp    19,050.75  (2026-11-06)
+========================================
+```
+
+```
+Pilih menu: 2
+Jumlah: 10
+Dari mata uang (contoh USD): USD
+Ke mata uang (Enter untuk IDR):
+
+10.00 USD = 164,005.00 IDR
+(kurs 1 USD = 16,400.5000 IDR, tanggal 2026-11-06)
+```
+
+Isi `kurs_USD.csv` dari menu `3`:
+
+```
+tanggal,mata_uang,kurs
+2026-10-09,USD,16500.5
+2026-10-12,USD,16420.25
+2026-10-13,USD,16610.0
+```
+
+**Tips:** file dari menu `3` bisa langsung dibuat grafik dengan [grafik_csv.py](#14-grafik_csvpy) (menu `2`, sumbu X `tanggal`, kolom angka `kurs`) atau dibuat laporan dengan [Laporan excel.py](#13-laporan-excelpy). Kurs diperbarui sekitar sore hari waktu Eropa pada hari kerja, jadi tanggalnya bisa tertinggal di akhir pekan.
+
+**Batasan:**
+- Butuh internet. Kalau koneksi putus, program menampilkan pesan dan kembali ke menu tanpa menutup diri.
+- Kode mata uang harus 3 huruf standar (`USD`, `EUR`, `JPY`, `SGD`). Hanya sekitar 30 mata uang yang didukung.
+- Ini kurs referensi, bukan kurs jual/beli di bank atau money changer.
+- Riwayat hanya mencakup hari kerja, jadi akhir pekan tidak ada datanya.
 
 ---
 
