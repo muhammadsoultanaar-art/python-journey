@@ -34,6 +34,7 @@ Kalau `python` tidak dikenali, coba `py nama_file.py`. File juga bisa dibuka di 
 | 13 | [Laporan excel.py](#13-laporan-excelpy) | Pembuat laporan Excel otomatis dari CSV | `openpyxl`, rumus Excel, grafik |
 | 14 | [grafik_csv.py](#14-grafik_csvpy) | Pembuat grafik batang dan garis dari CSV | `matplotlib`, `plt.bar`, `plt.plot`, simpan gambar |
 | 15 | [pengambil_kurs.py](#15-pengambil_kurspy) | Pengambil kurs mata uang dari internet | `requests`, API, JSON, `try`/`except` |
+| 16 | [rename_massal.py](#16-rename_massalpy) | Pengganti nama banyak file sekaligus | `pathlib`, `re` (regex), pratinjau, undo |
 
 ---
 
@@ -610,6 +611,57 @@ tanggal,mata_uang,kurs
 - Kode mata uang harus 3 huruf standar (`USD`, `EUR`, `JPY`, `SGD`). Hanya sekitar 30 mata uang yang didukung.
 - Ini kurs referensi, bukan kurs jual/beli di bank atau money changer.
 - Riwayat hanya mencakup hari kerja, jadi akhir pekan tidak ada datanya.
+
+---
+
+## 16. rename_massal.py
+
+**Fungsi:** mengganti nama banyak file dalam satu folder sekaligus, dengan **pratinjau** sebelum diubah dan **undo** setelahnya. Cocok untuk merapikan kumpulan video, foto, atau dokumen. Hanya nama yang diubah, **ekstensi file tidak pernah diubah**.
+
+| Menu | Fungsi |
+|---|---|
+| `1` | Ganti nama file |
+| `2` | Batalkan rename terakhir |
+| `0` | Keluar |
+
+| Mode | Fungsi | Contoh |
+|---|---|---|
+| `1` | Ganti teks di nama file | `Windah` menjadi `WB` |
+| `2` | Ganti dengan pola regex | pola `\s+final` diganti kosong |
+| `3` | Beri nomor urut | `video_010.mp4`, `video_011.mp4` |
+| `4` | Rapikan nama: huruf kecil, spasi jadi `_`, simbol dibuang | `foto  Liburan (1).JPG` menjadi `foto_liburan_1.JPG` |
+
+**Cara pakai:**
+1. Jalankan programnya, lalu masukkan lokasi folder (di Windows: klik kanan folder, pilih **Copy as path**, lalu tempel).
+2. Pilih menu `1`. Isi ekstensi kalau hanya mau memproses satu jenis file (misalnya `.mp4`), atau tekan Enter untuk semua file.
+3. Pilih mode dan isi datanya.
+4. Periksa **pratinjau** daftar nama lama dan nama baru. Jawab `y` untuk menjalankan, `n` untuk membatalkan.
+5. Salah ganti? Pilih menu `2` untuk mengembalikan nama lama.
+
+**Contoh (mode 1, ekstensi `.mp4`, cari `Windah`, ganti `WB`):**
+
+```
+3 file ditemukan.
+
+Pratinjau (2 file akan diganti):
+  Clip Windah 1.MP4  ->  Clip WB 1.MP4
+  Clip Windah 2.MP4  ->  Clip WB 2.MP4
+
+Lanjutkan? (y/n): y
+
+2 dari 2 file berhasil diganti namanya.
+Bisa dibatalkan lewat menu 2.
+```
+
+**Pengaman:** program **membatalkan semuanya, tanpa mengubah apa pun**, kalau ada nama baru yang kembar, nama tujuan sudah dipakai file lain (tidak ada file yang tertimpa), atau nama baru mengandung karakter yang tidak boleh dipakai di nama file. Pola regex yang salah juga ditolak.
+
+**Tips:** coba dulu di folder salinan. Di mode 3, file diurutkan menurut nama dan nomornya 3 digit (`001`). Mode 4 cocok dijalankan sebelum mode 3.
+
+**Batasan:**
+- Hanya memproses file di folder yang dipilih, tidak termasuk subfolder.
+- Hanya bagian nama yang diubah, ekstensi tetap.
+- Undo hanya untuk rename **terakhir**. Riwayatnya disimpan di `rename_log.json` di folder itu (jangan diunggah ke repo).
+- File yang sedang dibuka program lain bisa gagal diganti namanya. Program melaporkannya dan lanjut ke file berikutnya.
 
 ---
 
